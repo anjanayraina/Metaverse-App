@@ -28,19 +28,19 @@ uint256  sizeZ;
 
 // this is an array that will tell us the land that has been currently been taken
 
-area[] public allAreas;
+area[] public buildings;
 
 constructor (string memory _name , string memory _symbol , uint256 _cost) ERC721 (name , symbol){
 
     cost = _cost;
     // pushing some initial values into the Land
     // to get started 
-    allAreas.push(
+    buildings.push(
         
         area("E-54",  address(0x0) , 0, 0, 0, 100 , 100 , 100)
     );
 
-     allAreas.push(
+     buildings.push(
         
         area("New Plot",  address(0x0) , 101, 101, 101, 50 , 50 , 50)
     );
@@ -53,19 +53,24 @@ function mint(uint256 _id ) public payable{
 // this function will be used to buy more land in our metaverse
 
 uint256 supply = totalSupply;
-//require statements are used to verify a transaction that is about to happen
+// require statements are used to verify a transaction that is about to happen
 // In this case ,we have to check if the current supply of houses isnt exceeding the max supply of
 // if that given land hasnt been bought till now and many other conditions like that 
 require(supply <= maxSupply) ;
+// this says that the building is not already bought by someone
 require(buildings[_id - 1].owner == address(0x0));
 require(msg.value >=1 ether);
 
 buildings[_id - 1].owner = msg.sender;
+//assigning the building to the person
 totalSupply+=1;
+// increasing the supply of the bulidings in the blockchain
 __safeMint(msg.sender , _id);
+// safemint is an internal function ini ERC721 that mints a new token
 
 }
-
+// this function is already implemented in ERC721 and we are using
+// overriding its functanility 
 function transferForm{
 
     address from , 
@@ -75,12 +80,46 @@ function transferForm{
 
 require(
 
-_isApprovedOrOwner(_msgSender() ,tokenID), "ERC transfer is not approved"
+_isApprovedOrOwner(_msgSender() ,tokenID), "Transfer is not approved"
 
 );
 buildings[_id - 1].owner =to;
+
 _transfer(from , too, tokenId);
 
+
+}
+
+function safeTransferForm{
+
+    address from , 
+    address  to ,
+    uint256 tokenId
+    bytes memory _data;
+
+} public override{
+
+require(
+
+_isApprovedOrOwner(_msgSender() ,tokenID), "Transfer is not approved"
+
+);
+buildings[_id - 1].owner =to;
+
+_safeTransfer(from , too, tokenId ,_data);
+
+
+}
+
+function getBuildings() public view returns(area[] memory   ) {}
+
+return buildings;
+
+}
+
+function getBuilding(uint256 _id) public view returns(area memory   ) {}
+
+return buildings[_id -1];
 
 }
 
